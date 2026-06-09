@@ -20,6 +20,7 @@ public:
     void mouseDrag (const juce::MouseEvent&) override;
     void mouseUp (const juce::MouseEvent&) override;
     void mouseMove (const juce::MouseEvent&) override;
+    void mouseExit (const juce::MouseEvent&) override;
 
 private:
     void timerCallback() override;
@@ -43,6 +44,7 @@ private:
     std::array<float, numBars> barLevels {};
 
     int draggingHandle = -1;
+    int hoveredHandle = -1;
     juce::RangedAudioParameter* loParam = nullptr;
     juce::RangedAudioParameter* hiParam = nullptr;
 };

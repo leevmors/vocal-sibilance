@@ -14,6 +14,8 @@ SibilanceDisplay::SibilanceDisplay (VocalSibilanceProcessor& proc) : processor (
 
 SibilanceDisplay::~SibilanceDisplay()
 {
+    if (draggingHandle == 0) loParam->endChangeGesture();
+    if (draggingHandle == 1) hiParam->endChangeGesture();
     stopTimer();
 }
 
@@ -58,8 +60,8 @@ void SibilanceDisplay::timerCallback()
     {
         const float f0 = fMin * std::pow (fMax / fMin, (float) b / numBars);
         const float f1 = fMin * std::pow (fMax / fMin, (float) (b + 1) / numBars);
-        const int k0 = juce::jlimit (1, fftSize / 2 - 1, (int) (f0 * fftSize / sr));
-        const int k1 = juce::jlimit (k0, fftSize / 2 - 1, (int) (f1 * fftSize / sr));
+        const int k0 = juce::jlimit (1, fftSize / 2 - 1, (int) std::lround (f0 * fftSize / sr));
+        const int k1 = juce::jlimit (k0, fftSize / 2 - 1, (int) std::lround (f1 * fftSize / sr));
         float mag = 0.0f;
         for (int k = k0; k <= k1; ++k)
             mag = std::max (mag, fftData[(size_t) k]);
@@ -98,10 +100,13 @@ void SibilanceDisplay::paint (juce::Graphics& g)
         const float h = barLevels[(size_t) b] * a.getHeight();
         const bool inRange = fc >= loHz && fc <= hiHz;
 
-        g.setColour (inRange && openness > 0.05f
-                         ? porcelain::accent.withAlpha (0.35f + 0.6f * openness)
-                         : porcelain::barIdle);
-        g.fillRect (x + 0.5f, a.getBottom() - h, bw - 1.0f, h);
+        if (h > 0.0f)
+        {
+            g.setColour (inRange && openness > 0.05f
+                             ? porcelain::accent.withAlpha (0.35f + 0.6f * openness)
+                             : porcelain::barIdle);
+            g.fillRect (x + 0.5f, a.getBottom() - h, bw - 1.0f, h);
+        }
     }
 
     const float gr = processor.getUiGainReductionDb();            // GR readout
@@ -127,16 +132,16 @@ void SibilanceDisplay::paint (juce::Graphics& g)
     for (int handle = 0; handle < 2; ++handle)                    // range handles
     {
         const float hx = handle == 0 ? loX : hiX;
-        const bool hot = draggingHandle == handle
-                         || handleAt ((float) getMouseXYRelative().x) == handle;
+        const bool hot = draggingHandle == handle || hoveredHandle == handle;
         g.setColour (hot ? porcelain::accent : porcelain::text.withAlpha (0.55f));
         g.fillRect (hx - 0.75f, a.getY(), 1.5f, a.getHeight());
         if (hot)
         {
             const float hz = handle == 0 ? loHz : hiHz;
             g.setFont (juce::Font (juce::FontOptions (11.0f)));
+            const float labelX = juce::jlimit (a.getX(), a.getRight() - 64.0f, hx - 32.0f);
             g.drawText (juce::String (hz / 1000.0f, 1) + " kHz",
-                        juce::Rectangle<float> (hx - 32.0f, a.getY(), 64.0f, 14.0f),
+                        juce::Rectangle<float> (labelX, a.getY(), 64.0f, 14.0f),
                         juce::Justification::centred);
         }
     }
@@ -186,8 +191,22 @@ void SibilanceDisplay::mouseUp (const juce::MouseEvent&)
     draggingHandle = -1;
 }
 
-void SibilanceDisplay::mouseMove (const juce::MouseEvent&)
+void SibilanceDisplay::mouseMove (const juce::MouseEvent& e)
 {
-    repaint();   // hover feedback for the handles
+    const int h = handleAt (e.position.x);
+    if (h != hoveredHandle)
+    {
+        hoveredHandle = h;
+        repaint();
+    }
+}
+
+void SibilanceDisplay::mouseExit (const juce::MouseEvent&)
+{
+    if (hoveredHandle != -1)
+    {
+        hoveredHandle = -1;
+        repaint();
+    }
 }
 } // namespace vs
