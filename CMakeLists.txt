@@ -38,7 +38,8 @@ target_sources(VocalSibilance PRIVATE
     src/PluginProcessor.cpp
     src/dsp/CrossoverBands.cpp
     src/dsp/SibilanceDetector.cpp
-    src/dsp/GainComputer.cpp)
+    src/dsp/GainComputer.cpp
+    src/dsp/GritShaper.cpp)
 
 target_include_directories(VocalSibilance PRIVATE src)
 
@@ -76,7 +77,9 @@ target_sources(dsp_tests PRIVATE
     tests/SibilanceDetectorTests.cpp
     src/dsp/SibilanceDetector.cpp
     tests/GainComputerTests.cpp
-    src/dsp/GainComputer.cpp)
+    src/dsp/GainComputer.cpp
+    tests/GritShaperTests.cpp
+    src/dsp/GritShaper.cpp)
 
 target_include_directories(dsp_tests PRIVATE src)
 
