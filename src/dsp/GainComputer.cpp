@@ -1,16 +1,10 @@
 #include "GainComputer.h"
+#include "DspUtils.h"
 #include <algorithm>
 #include <cmath>
 
 namespace vs
 {
-namespace
-{
-    float coeffForMs (float ms, double sampleRate)
-    {
-        return 1.0f - std::exp (-1.0f / (0.001f * ms * (float) sampleRate));
-    }
-} // namespace
 
 void GainComputer::prepare (double sr)
 {
@@ -31,9 +25,11 @@ void GainComputer::setSmoothAmount (float a)
 
 float GainComputer::processSample (float openness)
 {
-    const float knee = openness * openness * (3.0f - 2.0f * openness);  // soft knee
+    // openness arrives pre-shaped by the detector; this second smoothstep
+    // deliberately steepens the overall S-curve (soft knee).
+    const float knee = openness * openness * (3.0f - 2.0f * openness);
     const float targetDb = -maxDepthDb * smoothAmount * knee;
-    const float target = std::pow (10.0f, targetDb * (1.0f / 20.0f));
+    const float target = std::exp (targetDb * 0.11512925f);   // 10^(dB/20), exp form
     gain += (target < gain ? attCoeff : relCoeff) * (target - gain);
     return gain;
 }

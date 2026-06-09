@@ -1,13 +1,10 @@
 #include "SibilanceDetector.h"
+#include "DspUtils.h"
 #include <algorithm>
 #include <cmath>
 
 namespace vs
 {
-float SibilanceDetector::coeffForMs (float ms, double sampleRate)
-{
-    return 1.0f - std::exp (-1.0f / (0.001f * ms * (float) sampleRate));
-}
 
 void SibilanceDetector::prepare (double sr)
 {

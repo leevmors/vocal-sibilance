@@ -13,7 +13,6 @@ public:
     float processSample (float bandAbs, float fullAbs);   // returns openness 0..1
 
 private:
-    static float coeffForMs (float ms, double sampleRate);
     static void follow (float& env, float target, float attack, float release);
 
     float bandEnv = 0.0f, fullEnv = 0.0f, openness = 0.0f;
