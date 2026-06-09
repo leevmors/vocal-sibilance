@@ -35,7 +35,8 @@ clap_juce_extensions_plugin(TARGET VocalSibilance
     CLAP_FEATURES audio-effect)
 
 target_sources(VocalSibilance PRIVATE
-    src/PluginProcessor.cpp)
+    src/PluginProcessor.cpp
+    src/dsp/CrossoverBands.cpp)
 
 target_include_directories(VocalSibilance PRIVATE src)
 
@@ -67,7 +68,9 @@ enable_testing()
 juce_add_console_app(dsp_tests PRODUCT_NAME "dsp_tests")
 
 target_sources(dsp_tests PRIVATE
-    tests/SanityTests.cpp)
+    tests/SanityTests.cpp
+    tests/CrossoverBandsTests.cpp
+    src/dsp/CrossoverBands.cpp)
 
 target_include_directories(dsp_tests PRIVATE src)
 
