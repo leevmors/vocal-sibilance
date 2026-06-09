@@ -5,13 +5,13 @@ namespace vs
 {
 namespace porcelain
 {
-    const juce::Colour face    { 0xFFF7F6F3 };
-    const juce::Colour inset   { 0xFFEFEDE8 };
-    const juce::Colour line    { 0xFFDCD9D2 };
-    const juce::Colour barIdle { 0xFFD5D2CA };
-    const juce::Colour text    { 0xFF2A2A28 };
-    const juce::Colour muted   { 0xFF6B6862 };
-    const juce::Colour accent  { 0xFFE0552C };
+    inline const juce::Colour face    { 0xFFF7F6F3 };
+    inline const juce::Colour inset   { 0xFFEFEDE8 };
+    inline const juce::Colour line    { 0xFFDCD9D2 };
+    inline const juce::Colour barIdle { 0xFFD5D2CA };
+    inline const juce::Colour text    { 0xFF2A2A28 };
+    inline const juce::Colour muted   { 0xFF6B6862 };
+    inline const juce::Colour accent  { 0xFFE0552C };
 }
 
 class PorcelainLookAndFeel : public juce::LookAndFeel_V4

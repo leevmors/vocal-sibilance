@@ -43,7 +43,7 @@ void PorcelainLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y,
                                              float startAngle, float endAngle,
                                              juce::Slider& slider)
 {
-    const auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (5.0f);
+    const auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (8.0f);
     const float size = juce::jmin (bounds.getWidth(), bounds.getHeight());
     const auto centre = bounds.getCentre();
     const float radius = size * 0.5f;
