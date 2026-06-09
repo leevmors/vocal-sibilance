@@ -37,7 +37,8 @@ clap_juce_extensions_plugin(TARGET VocalSibilance
 target_sources(VocalSibilance PRIVATE
     src/PluginProcessor.cpp
     src/dsp/CrossoverBands.cpp
-    src/dsp/SibilanceDetector.cpp)
+    src/dsp/SibilanceDetector.cpp
+    src/dsp/GainComputer.cpp)
 
 target_include_directories(VocalSibilance PRIVATE src)
 
@@ -73,7 +74,9 @@ target_sources(dsp_tests PRIVATE
     tests/CrossoverBandsTests.cpp
     src/dsp/CrossoverBands.cpp
     tests/SibilanceDetectorTests.cpp
-    src/dsp/SibilanceDetector.cpp)
+    src/dsp/SibilanceDetector.cpp
+    tests/GainComputerTests.cpp
+    src/dsp/GainComputer.cpp)
 
 target_include_directories(dsp_tests PRIVATE src)
 
