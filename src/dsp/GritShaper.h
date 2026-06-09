@@ -5,7 +5,7 @@
 
 namespace vs
 {
-// Detector-gated morphing waveshaper for the sibilant band, 4x oversampled
+// Detector-gated morphing waveshaper for the sibilant band, 8x oversampled
 // with minimum-phase polyphase IIR halfbands (no integer latency).
 class GritShaper
 {

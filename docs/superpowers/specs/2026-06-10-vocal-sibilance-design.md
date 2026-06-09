@@ -86,7 +86,7 @@ in ──► Linkwitz-Riley split ──► low/rest ─────────
    by the detector envelope, so saturation rides only the ess sounds — never
    breath or vocal body. Character morphs the transfer curve continuously:
    0 % = soft symmetric tanh (tape-like), 100 % = harder asymmetric curve with
-   richer upper harmonics. The stage runs **4× oversampled** with proper
+   richer upper harmonics. The stage runs **8× oversampled** with proper
    anti-aliasing filters; aliasing in the 5–15 kHz region is audible garbage
    and defeats the product's purpose.
 5. **Recombine → Mix → Output.** Listen mode taps the processed sibilant band
@@ -95,7 +95,7 @@ in ──► Linkwitz-Riley split ──► low/rest ─────────
 ### Engine quality invariants
 
 - Zero added latency (IIR crossovers, no lookahead) — safe while tracking.
-  The grit stage's 4× oversampling uses minimum-phase IIR filters so it adds
+  The grit stage's 8× oversampling uses minimum-phase IIR filters so it adds
   no integer latency; if a latency-adding mode is ever introduced, it must be
   reported to the host via `setLatencySamples`.
 - With Smooth = 0 and Grit = 0, output nulls against input (bit-transparent),

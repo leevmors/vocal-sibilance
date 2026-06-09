@@ -43,7 +43,7 @@ TEST_CASE ("reported latency is near zero (minimum-phase IIR)", "[grit]")
     gs.prepare (48000.0, 512, 1);
     INFO ("latency = " << gs.getLatencySamples() << " samples");
     CHECK (gs.getLatencySamples() >= 0.0f);
-    CHECK (gs.getLatencySamples() < 5.5f);   // measured ~4.4 at 48 kHz with 2-stage max-quality polyphase IIR
+    CHECK (gs.getLatencySamples() < 5.0f);   // measured ~3.82 at 48 kHz with 3-stage (8x) min-phase polyphase IIR
 }
 
 TEST_CASE ("aliasing sits >= 40 dB below the loudest harmonic across the band", "[grit]")
@@ -105,7 +105,7 @@ TEST_CASE ("aliasing sits >= 40 dB below the loudest harmonic across the band", 
             // reference level either.
             std::vector<int> harmonicBins;
             float maxHarm = 0.0f;
-            for (int k = 1; k <= 4; ++k)
+            for (int k = 1; k <= 16; ++k)
             {
                 const double fh = k * f0;
                 if (fh < nyq)
@@ -118,17 +118,23 @@ TEST_CASE ("aliasing sits >= 40 dB below the loudest harmonic across the band", 
             REQUIRE (maxHarm > 0.0f);
 
             float maxSpur = 0.0f;
+            int   argmaxSpurBin = 0;
             for (int k = binOf (100.0); k < binOf (0.95 * nyq); ++k)
             {
                 bool nearHarmonic = false;
                 for (int hb : harmonicBins)
                     if (std::abs (k - hb) <= 6) { nearHarmonic = true; break; }
-                if (! nearHarmonic)
-                    maxSpur = std::max (maxSpur, fft[(size_t) k]);
+                if (! nearHarmonic && fft[(size_t) k] > maxSpur)
+                {
+                    maxSpur = fft[(size_t) k];
+                    argmaxSpurBin = k;
+                }
             }
 
             const float dbDown = juce::Decibels::gainToDecibels (maxSpur / maxHarm);
-            INFO ("sr " << sr << " f0 " << f0 << " spur floor " << dbDown << " dB");
+            const double argmaxSpurFreq = (double) argmaxSpurBin * sr / N;
+            INFO ("sr " << sr << " f0 " << f0 << " spur floor " << dbDown
+                  << " dB  argmaxSpur " << argmaxSpurFreq << " Hz (bin " << argmaxSpurBin << ")");
             CHECK (dbDown < -40.0f);
         }
     }

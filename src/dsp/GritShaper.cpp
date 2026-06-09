@@ -6,9 +6,9 @@ namespace vs
 void GritShaper::prepare (double sampleRate, int maxBlockSize, int numChannels)
 {
     oversampling = std::make_unique<juce::dsp::Oversampling<float>> (
-        (size_t) numChannels, 2,                       // 2 stages -> 4x
+        (size_t) numChannels, 3,                       // 3 stages -> 8x
         juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR,
-        true);                                         // max quality: linear phase
+        false);                                        // min quality: lower latency, equal alias rejection here
     oversampling->initProcessing ((size_t) maxBlockSize);
 
     dcBlockers.clear();
@@ -57,14 +57,14 @@ void GritShaper::process (juce::AudioBuffer<float>& band, const float* env, int 
                                         (size_t) band.getNumChannels(),
                                         (size_t) numSamples);
     auto osBlock = oversampling->processSamplesUp (block);
-    jassert (osBlock.getNumSamples() == 4 * (size_t) numSamples);   // 2-stage = exactly 4x
+    jassert (osBlock.getNumSamples() == 8 * (size_t) numSamples);   // 3-stage = exactly 8x
 
     for (size_t ch = 0; ch < osBlock.getNumChannels(); ++ch)
     {
         float* d = osBlock.getChannelPointer (ch);
         for (size_t i = 0; i < osBlock.getNumSamples(); ++i)
         {
-            const float wet = grit * env[i >> 2];          // 4x: base-rate index i/4
+            const float wet = grit * env[i >> 3];          // 8x: base-rate index i/8
             if (wet <= 0.0f)
                 continue;
             const float drive = 1.0f + 9.0f * wet;
