@@ -95,7 +95,9 @@ in ──► Linkwitz-Riley split ──► low/rest ─────────
 ### Engine quality invariants
 
 - Zero added latency (IIR crossovers, no lookahead) — safe while tracking.
-  Oversampling latency inside the grit stage is compensated internally.
+  The grit stage's 4× oversampling uses minimum-phase IIR filters so it adds
+  no integer latency; if a latency-adding mode is ever introduced, it must be
+  reported to the host via `setLatencySamples`.
 - With Smooth = 0 and Grit = 0, output nulls against input (bit-transparent),
   proven by an automated test.
 - No allocation, locking, or system calls on the audio thread.
@@ -125,8 +127,8 @@ vocal-sibilance/
 │       ├── SibilanceDisplay.{h,cpp} # spectrum + range handles + GR overlay
 │       ├── PorcelainKnob.{h,cpp}
 │       └── HeaderBar.{h,cpp}        # title, presets, bypass, brand
-├── tests/                            # DSP unit tests (Catch2 or JUCE UnitTest)
-├── presets/                          # factory presets (JSON/XML)
+├── tests/                            # DSP unit tests (Catch2)
+├── presets/                          # factory presets (XML, ValueTree format)
 └── .github/workflows/                # CI: build, test, pluginval, package
 ```
 
@@ -184,8 +186,10 @@ persistence as normal.
 
 - DSP unit tests: LR4 crossover sums flat (null), neutral-settings null against
   dry, detector fires on synthesized ess bursts and stays quiet on vowels,
-  gain computer curve correctness, measured aliasing of the grit stage below
-  agreed threshold with oversampling on.
+  gain computer curve correctness, and measured aliasing of the grit stage:
+  with oversampling on, aliasing components must sit ≥ 40 dB below the loudest
+  intended harmonic (worst case: max Grit/Character, 48 kHz session, sine
+  sweep through the sibilant band).
 - pluginval at maximum strictness against the VST3 build (Windows and macOS).
 
 **Manual before each release:** DAW matrix — FL Studio, Ableton, Cubase,
