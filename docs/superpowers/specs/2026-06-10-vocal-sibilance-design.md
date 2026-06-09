@@ -99,7 +99,7 @@ in ──► Linkwitz-Riley split ──► low/rest ─────────
   no integer latency; if a latency-adding mode is ever introduced, it must be
   reported to the host via `setLatencySamples`.
 - With Smooth = 0 and Grit = 0, output nulls against input (bit-transparent),
-  proven by an automated test.
+  proven by an automated test. With Grit engaged the sibilant band is intentionally re-colored; magnitude-flat recombination is a grit-off guarantee.
 - No allocation, locking, or system calls on the audio thread.
 - Denormal protection (FTZ/DAZ); NaN/Inf scrubbing at the output so the plugin
   can never spray garbage into a mix.

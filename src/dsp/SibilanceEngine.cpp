@@ -25,6 +25,7 @@ void SibilanceEngine::prepare (double sampleRate, int maxBlockSize, int numChann
     rangeHiSm.reset (sampleRate, 0.02);
     rangeLoSm.setCurrentAndTargetValue (params.rangeLoHz);
     rangeHiSm.setCurrentAndTargetValue (params.rangeHiHz);
+    primed = false;
 
     reset();
 }
@@ -35,6 +36,7 @@ void SibilanceEngine::reset()
     detector.reset();
     gainComputer.reset();
     gritShaper.reset();
+    metrics = {};
 }
 
 void SibilanceEngine::setParams (const EngineParams& p)
@@ -44,8 +46,17 @@ void SibilanceEngine::setParams (const EngineParams& p)
     gritShaper.setGrit (p.grit);
     gritShaper.setCharacter (p.character);
     // Mod A: target the smoothers instead of stepping the crossover directly
-    rangeLoSm.setTargetValue (p.rangeLoHz);
-    rangeHiSm.setTargetValue (p.rangeHiHz);
+    if (! primed)   // first params after prepare: snap, don't sweep (session load)
+    {
+        rangeLoSm.setCurrentAndTargetValue (p.rangeLoHz);
+        rangeHiSm.setCurrentAndTargetValue (p.rangeHiHz);
+        primed = true;
+    }
+    else
+    {
+        rangeLoSm.setTargetValue (p.rangeLoHz);
+        rangeHiSm.setTargetValue (p.rangeHiHz);
+    }
 }
 
 void SibilanceEngine::process (juce::AudioBuffer<float>& buffer)
@@ -106,6 +117,8 @@ void SibilanceEngine::process (juce::AudioBuffer<float>& buffer)
         wetFade.setTargetValue (active ? 1.0f : 0.0f);
         mixSmoothed.setTargetValue (params.mix);
 
+        // w==0 gives bit-exact dry ONLY while the wet path is finite; a non-finite
+        // p would turn 0*(p-d) into NaN. The output scrub below backstops that.
         for (int i = 0; i < n; ++i)
         {
             const float w = wetFade.getNextValue() * mixSmoothed.getNextValue();

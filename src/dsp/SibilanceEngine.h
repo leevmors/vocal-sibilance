@@ -55,6 +55,7 @@ private:
     juce::SmoothedValue<float> rangeLoSm, rangeHiSm;
 
     EngineParams params;
+    bool primed = false;
     EngineMetrics metrics;
 };
 } // namespace vs

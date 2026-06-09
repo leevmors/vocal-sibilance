@@ -182,3 +182,34 @@ TEST_CASE ("grit on a non-sibilant vowel adds nothing audible", "[engine]")
     const double dbDiff = 20.0 * std::log10 (std::sqrt (sumOut / sumIn));
     CHECK (std::abs (dbDiff) < 0.05);
 }
+
+TEST_CASE ("bit-exact neutrality is restored after automation returns to zero", "[engine]")
+{
+    vs::SibilanceEngine eng;
+    eng.prepare (48000.0, 512, 2);
+    auto p = neutralParams();
+
+    juce::Random rng (99);
+    juce::AudioBuffer<float> buf (2, 512), ref (2, 512);
+    auto fillNoise = [&]
+    {
+        for (int ch = 0; ch < 2; ++ch)
+            for (int i = 0; i < 512; ++i)
+                buf.setSample (ch, i, rng.nextFloat() - 0.5f);
+    };
+
+    p.smooth = 1.0f;                       // engage...
+    eng.setParams (p);
+    for (int b = 0; b < 8; ++b) { fillNoise(); eng.process (buf); }
+
+    p.smooth = 0.0f;                       // ...then return to neutral
+    eng.setParams (p);
+    for (int b = 0; b < 8; ++b) { fillNoise(); eng.process (buf); }   // 85 ms >> 50 ms fade
+
+    fillNoise();
+    ref.makeCopyOf (buf);
+    eng.process (buf);
+    for (int ch = 0; ch < 2; ++ch)
+        for (int i = 0; i < 512; ++i)
+            REQUIRE (buf.getSample (ch, i) == ref.getSample (ch, i));
+}
