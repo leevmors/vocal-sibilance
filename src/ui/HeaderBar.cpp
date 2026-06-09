@@ -38,6 +38,7 @@ void HeaderBar::presetChosen()
     }
 
     presetBox.setSelectedId (0, juce::dontSendNotification);   // action, not a state
+    juce::Component::SafePointer<HeaderBar> safeThis (this);
     const auto dir = PresetManager::userPresetDirectory();
 
     if (id == 100)
@@ -45,11 +46,13 @@ void HeaderBar::presetChosen()
         chooser = std::make_unique<juce::FileChooser> ("Save preset", dir, "*.vsib");
         chooser->launchAsync (juce::FileBrowserComponent::saveMode
                                   | juce::FileBrowserComponent::canSelectFiles,
-            [this] (const juce::FileChooser& fc)
+            [safeThis] (const juce::FileChooser& fc)
             {
+                if (safeThis == nullptr)
+                    return;
                 const auto f = fc.getResult();
                 if (f != juce::File())
-                    presets.saveUserPreset (f.withFileExtension ("vsib"));
+                    safeThis->presets.saveUserPreset (f.withFileExtension ("vsib"));
             });
     }
     else if (id == 101)
@@ -57,11 +60,13 @@ void HeaderBar::presetChosen()
         chooser = std::make_unique<juce::FileChooser> ("Load preset", dir, "*.vsib");
         chooser->launchAsync (juce::FileBrowserComponent::openMode
                                   | juce::FileBrowserComponent::canSelectFiles,
-            [this] (const juce::FileChooser& fc)
+            [safeThis] (const juce::FileChooser& fc)
             {
+                if (safeThis == nullptr)
+                    return;
                 const auto f = fc.getResult();
-                if (f.existsAsFile() && ! presets.loadUserPreset (f))
-                    presetBox.setText ("preset load failed", juce::dontSendNotification);
+                if (f.existsAsFile() && ! safeThis->presets.loadUserPreset (f))
+                    safeThis->presetBox.setText ("preset load failed", juce::dontSendNotification);
             });
     }
 }
