@@ -73,12 +73,14 @@ target_include_directories(dsp_tests PRIVATE src)
 
 target_compile_definitions(dsp_tests PRIVATE
     JUCE_WEB_BROWSER=0
-    JUCE_USE_CURL=0)
+    JUCE_USE_CURL=0
+    JUCE_DISPLAY_SPLASH_SCREEN=0)
 
 target_link_libraries(dsp_tests PRIVATE
     Catch2::Catch2WithMain
     juce::juce_dsp
-    juce::juce_recommended_config_flags)
+    juce::juce_recommended_config_flags
+    juce::juce_recommended_warning_flags)
 
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
 include(CTest)
