@@ -19,7 +19,8 @@ bool VocalSibilanceProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 void VocalSibilanceProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
 {
     juce::ScopedNoDenormals noDenormals;
-    // passthrough for now
+    // JUCE effect model: the buffer already contains the input, so leaving it
+    // untouched is a true passthrough. ignoreUnused only silences the warning.
     juce::ignoreUnused (buffer);
 }
 

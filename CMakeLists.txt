@@ -15,7 +15,7 @@ FetchContent_MakeAvailable(JUCE)
 
 FetchContent_Declare(clap-juce-extensions
     GIT_REPOSITORY https://github.com/free-audio/clap-juce-extensions.git
-    GIT_TAG main)
+    GIT_TAG 51a9359315298de632cf44e9d7524940868441e6)
 FetchContent_MakeAvailable(clap-juce-extensions)
 
 juce_add_plugin(VocalSibilance
@@ -43,7 +43,8 @@ target_compile_definitions(VocalSibilance PUBLIC
     JUCE_WEB_BROWSER=0
     JUCE_USE_CURL=0
     JUCE_VST3_CAN_REPLACE_VST2=0
-    JUCE_DISPLAY_SPLASH_SCREEN=0)   # allowed: AGPLv3 build
+    JUCE_DISPLAY_SPLASH_SCREEN=0    # allowed: AGPLv3 build
+    JUCE_REPORT_APP_USAGE=0)
 
 target_link_libraries(VocalSibilance
     PRIVATE
