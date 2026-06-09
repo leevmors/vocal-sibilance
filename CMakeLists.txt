@@ -51,7 +51,8 @@ target_sources(VocalSibilance PRIVATE
     src/dsp/GainComputer.cpp
     src/dsp/GritShaper.cpp
     src/dsp/SibilanceEngine.cpp
-    src/ui/PorcelainLookAndFeel.cpp)
+    src/ui/PorcelainLookAndFeel.cpp
+    src/ui/SibilanceDisplay.cpp)
 
 target_include_directories(VocalSibilance PRIVATE src)
 
