@@ -1,5 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <cmath>
 #include "PluginProcessor.h"
 
 namespace
@@ -74,4 +75,62 @@ TEST_CASE ("mono and stereo layouts accepted, mismatch rejected", "[processor]")
     CHECK (p.setBusesLayout (mono));
     CHECK (p.setBusesLayout (stereo));
     CHECK (! p.setBusesLayout (mismatch));
+}
+
+TEST_CASE ("smooth percent reaches the engine scaled, and reduces sibilance", "[processor]")
+{
+    // smooth stays at its 35% default: if the *0.01f conversion were missing,
+    // the engine would clamp 35.0 to 1.0 and reduction would hit ~15 dB,
+    // failing the upper bound below.
+    VocalSibilanceProcessor proc;
+    proc.prepareToPlay (48000.0, 512);
+
+    juce::AudioBuffer<float> buf (2, 512);
+    juce::MidiBuffer midi;
+    double phase = 0.0;
+    for (int b = 0; b < 30; ++b)            // ~320 ms of a steady 8 kHz "ess"
+    {
+        for (int i = 0; i < 512; ++i)
+        {
+            const float v = 0.4f * (float) std::sin (phase);
+            phase += 2.0 * 3.141592653589793 * 8000.0 / 48000.0;
+            buf.setSample (0, i, v);
+            buf.setSample (1, i, v);
+        }
+        proc.processBlock (buf, midi);
+    }
+    const float gr = proc.getUiGainReductionDb();
+    CHECK (gr > 3.0f);    // smooth is doing something...
+    CHECK (gr < 8.0f);    // ...at 35%, not at a mis-scaled 100%
+}
+
+TEST_CASE ("listen parameter routes the band solo through the processor", "[processor]")
+{
+    VocalSibilanceProcessor proc;
+    auto* listen = proc.apvts.getParameter ("listen");
+    REQUIRE (listen != nullptr);
+    listen->setValueNotifyingHost (1.0f);
+    proc.prepareToPlay (48000.0, 512);
+
+    juce::AudioBuffer<float> buf (2, 512);
+    juce::MidiBuffer midi;
+    double phase = 0.0, sumIn = 0.0, sumOut = 0.0;
+    for (int b = 0; b < 16; ++b)            // 300 Hz tone: far below the band
+    {
+        for (int i = 0; i < 512; ++i)
+        {
+            const float v = 0.5f * (float) std::sin (phase);
+            phase += 2.0 * 3.141592653589793 * 300.0 / 48000.0;
+            buf.setSample (0, i, v);
+            buf.setSample (1, i, v);
+        }
+        if (b >= 8)
+            for (int i = 0; i < 512; ++i)
+                sumIn += (double) buf.getSample (0, i) * buf.getSample (0, i);
+        proc.processBlock (buf, midi);
+        if (b >= 8)
+            for (int i = 0; i < 512; ++i)
+                sumOut += (double) buf.getSample (0, i) * buf.getSample (0, i);
+    }
+    CHECK (std::sqrt (sumOut) < std::sqrt (sumIn) * 0.1);   // soloed band is near-silent
 }

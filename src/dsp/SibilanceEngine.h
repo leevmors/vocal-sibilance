@@ -56,6 +56,7 @@ private:
 
     EngineParams params;
     bool primed = false;
+    int preparedChannels = 0;
     EngineMetrics metrics;
 };
 } // namespace vs

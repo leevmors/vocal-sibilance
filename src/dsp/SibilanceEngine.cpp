@@ -5,6 +5,7 @@ namespace vs
 {
 void SibilanceEngine::prepare (double sampleRate, int maxBlockSize, int numChannels)
 {
+    preparedChannels = numChannels;
     crossover.prepare (sampleRate, maxBlockSize, numChannels);
     detector.prepare (sampleRate);
     gainComputer.prepare (sampleRate);
@@ -61,7 +62,8 @@ void SibilanceEngine::setParams (const EngineParams& p)
 
 void SibilanceEngine::process (juce::AudioBuffer<float>& buffer)
 {
-    const int numCh = buffer.getNumChannels();
+    jassert (buffer.getNumChannels() <= preparedChannels);
+    const int numCh = juce::jmin (buffer.getNumChannels(), preparedChannels);
     const int n = buffer.getNumSamples();
 
     for (int ch = 0; ch < numCh; ++ch)

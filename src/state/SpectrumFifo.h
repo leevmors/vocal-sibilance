@@ -11,6 +11,7 @@ class SpectrumFifo
 public:
     void push (const juce::AudioBuffer<float>& buffer)
     {
+        if (buffer.getNumChannels() <= 0) return;
         const int numCh = buffer.getNumChannels();
         int start1, size1, start2, size2;
         fifo.prepareToWrite (buffer.getNumSamples(), start1, size1, start2, size2);

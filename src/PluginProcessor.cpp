@@ -121,8 +121,17 @@ void VocalSibilanceProcessor::getStateInformation (juce::MemoryBlock& destData)
 void VocalSibilanceProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     if (auto xml = getXmlFromBinary (data, sizeInBytes))
+    {
         if (xml->hasTagName (apvts.state.getType()))
-            apvts.replaceState (juce::ValueTree::fromXml (*xml));
+        {
+            auto tree = juce::ValueTree::fromXml (*xml);
+            // v1 is the only schema so far; branch on this when a future
+            // version changes parameter semantics.
+            const int loadedVersion = (int) tree.getProperty ("stateVersion", 1);
+            juce::ignoreUnused (loadedVersion);
+            apvts.replaceState (tree);
+        }
+    }
     // unknown/corrupt blobs and missing fields: keep current/default values
 }
 
