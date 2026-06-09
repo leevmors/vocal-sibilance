@@ -22,12 +22,13 @@ public:
     float getLoHz() const { return loHz; }
     float getHiHz() const { return hiHz; }
 
-    static constexpr float minHz = 2000.0f, maxHz = 16000.0f, minGapRatio = 1.4142f;
+    static constexpr float minHz = 2000.0f, maxHz = 16000.0f, minGapRatio = 1.4142135f;
 
 private:
     juce::dsp::LinkwitzRileyFilter<float> lowSplit, highSplit, lowAllpass;
     juce::AudioBuffer<float> low, band, high;
     float loHz = 4000.0f, hiHz = 11000.0f;
     int channels = 0;
+    double sampleRateHz = 48000.0;
 };
 } // namespace vs

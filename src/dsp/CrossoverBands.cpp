@@ -4,6 +4,7 @@ namespace vs
 {
 void CrossoverBands::prepare (double sampleRate, int maxBlockSize, int numChannels)
 {
+    sampleRateHz = sampleRate;
     channels = numChannels;
     const juce::dsp::ProcessSpec spec { sampleRate,
                                         (juce::uint32) maxBlockSize,
@@ -30,10 +31,11 @@ void CrossoverBands::reset()
 
 void CrossoverBands::setCrossoverFrequencies (float newLo, float newHi)
 {
-    loHz = juce::jlimit (minHz, maxHz, newLo);
-    hiHz = juce::jlimit (minHz, maxHz, newHi);
+    const float liveMaxHz = juce::jmin (maxHz, (float) (sampleRateHz * 0.49));
+    loHz = juce::jlimit (minHz, liveMaxHz, newLo);
+    hiHz = juce::jlimit (minHz, liveMaxHz, newHi);
     if (hiHz < loHz * minGapRatio)
-        hiHz = juce::jmin (maxHz, loHz * minGapRatio);
+        hiHz = juce::jmin (liveMaxHz, loHz * minGapRatio);
     if (hiHz < loHz * minGapRatio)              // hi hit the ceiling: pull lo down
         loHz = hiHz / minGapRatio;
 
@@ -66,6 +68,7 @@ void CrossoverBands::split (const juce::AudioBuffer<float>& input)
 
 void CrossoverBands::recombine (juce::AudioBuffer<float>& dest, int numSamples) const
 {
+    jassert (dest.getNumChannels() == channels); // must match prepare()
     for (int ch = 0; ch < dest.getNumChannels(); ++ch)
     {
         dest.copyFrom (ch, 0, low,  ch, 0, numSamples);
