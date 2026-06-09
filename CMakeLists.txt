@@ -34,6 +34,16 @@ clap_juce_extensions_plugin(TARGET VocalSibilance
     CLAP_ID "com.dararara.vocalsibilance"
     CLAP_FEATURES audio-effect)
 
+juce_add_binary_data(VSAssets SOURCES
+    assets/fonts/InterRegular.ttf
+    assets/fonts/InterSemiBold.ttf
+    presets/Gentle.xml
+    presets/Standard.xml
+    presets/BrightVocal.xml
+    presets/TameHarshMic.xml
+    presets/GrittyPop.xml
+    presets/MaximumCharacter.xml)
+
 target_sources(VocalSibilance PRIVATE
     src/PluginProcessor.cpp
     src/dsp/CrossoverBands.cpp
@@ -53,6 +63,7 @@ target_compile_definitions(VocalSibilance PUBLIC
 
 target_link_libraries(VocalSibilance
     PRIVATE
+        VSAssets
         juce::juce_audio_utils
         juce::juce_dsp
     PUBLIC

@@ -1,0 +1,9 @@
+<Preset name="Bright Vocal">
+  <PARAM id="smooth" value="35"/>
+  <PARAM id="grit" value="5"/>
+  <PARAM id="character" value="15"/>
+  <PARAM id="mix" value="100"/>
+  <PARAM id="output" value="0"/>
+  <PARAM id="rangeLo" value="5000"/>
+  <PARAM id="rangeHi" value="12000"/>
+</Preset>
