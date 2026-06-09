@@ -16,8 +16,8 @@ private:
     static float coeffForMs (float ms, double sampleRate);
     static void follow (float& env, float target, float attack, float release);
 
-    float bandEnv = 0, fullEnv = 0, openness = 0;
-    float bandAtt = 0, bandRel = 0, fullAtt = 0, fullRel = 0, openAtt = 0, openRel = 0;
+    float bandEnv = 0.0f, fullEnv = 0.0f, openness = 0.0f;
+    float bandAtt = 0.0f, bandRel = 0.0f, fullAtt = 0.0f, fullRel = 0.0f, openAtt = 0.0f, openRel = 0.0f;
 
     static constexpr float ratioLow   = 0.30f;   // openness 0 at/below this band/full ratio
     static constexpr float ratioHigh  = 0.85f;   // openness 1 at/above

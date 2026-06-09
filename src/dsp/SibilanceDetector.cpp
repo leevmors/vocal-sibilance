@@ -35,7 +35,14 @@ float SibilanceDetector::processSample (float bandAbs, float fullAbs)
     follow (bandEnv, bandAbs, bandAtt, bandRel);
     follow (fullEnv, fullAbs, fullAtt, fullRel);
 
+    // floor tiny envelopes to zero: host-agnostic denormal protection during silence
+    if (bandEnv < 1.0e-15f) bandEnv = 0.0f;
+    if (fullEnv < 1.0e-15f) fullEnv = 0.0f;
+
     float raw = 0.0f;
+    // Broadband onsets (plosives) briefly drive the ratio high because the band
+    // envelope attacks ~15x faster than the full envelope. This is deliberate
+    // (fast ess capture); the clamp + 0.5 ms openness smoothing bound the effect.
     if (fullEnv > silenceEnv)
     {
         const float ratio = bandEnv / fullEnv;
@@ -43,6 +50,7 @@ float SibilanceDetector::processSample (float bandAbs, float fullAbs)
         raw = raw * raw * (3.0f - 2.0f * raw);   // smoothstep knee
     }
     follow (openness, raw, openAtt, openRel);
+    if (openness < 1.0e-15f) openness = 0.0f;
     return openness;
 }
 } // namespace vs

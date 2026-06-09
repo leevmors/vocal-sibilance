@@ -64,3 +64,19 @@ TEST_CASE ("silence produces zero openness", "[detector]")
         open = det.processSample (0.0f, 0.0f);
     CHECK (open == 0.0f);
 }
+
+TEST_CASE ("detector opens quickly when an ess follows a warm vowel", "[detector]")
+{
+    vs::SibilanceDetector det;
+    det.prepare (48000.0);
+
+    for (int i = 0; i < 9600; ++i)            // 200 ms vowel warm-up
+    {
+        const float a = std::abs ((float) std::sin (2.0 * pi * 300.0 * i / 48000.0));
+        det.processSample (0.001f * a, 0.3f * a);
+    }
+    float open = 0.0f;
+    for (int i = 0; i < 1440; ++i)            // then a 30 ms ess
+        open = det.processSample (0.3f, 0.3f);
+    CHECK (open > 0.5f);
+}
