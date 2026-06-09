@@ -82,7 +82,9 @@ target_sources(dsp_tests PRIVATE
     tests/GritShaperTests.cpp
     src/dsp/GritShaper.cpp
     tests/SibilanceEngineTests.cpp
-    src/dsp/SibilanceEngine.cpp)
+    src/dsp/SibilanceEngine.cpp
+    tests/ProcessorTests.cpp
+    src/PluginProcessor.cpp)
 
 target_include_directories(dsp_tests PRIVATE src)
 
@@ -91,8 +93,12 @@ target_compile_definitions(dsp_tests PRIVATE
     JUCE_USE_CURL=0
     JUCE_DISPLAY_SPLASH_SCREEN=0)
 
+target_compile_definitions(VocalSibilance PRIVATE VS_USE_GENERIC_EDITOR=1)  # removed in Task 13
+target_compile_definitions(dsp_tests PRIVATE VS_USE_GENERIC_EDITOR=1)       # permanent
+
 target_link_libraries(dsp_tests PRIVATE
     Catch2::Catch2WithMain
+    juce::juce_audio_utils
     juce::juce_dsp
     juce::juce_recommended_config_flags
     juce::juce_recommended_warning_flags)
