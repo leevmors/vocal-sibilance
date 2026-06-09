@@ -8,7 +8,7 @@ void GritShaper::prepare (double sampleRate, int maxBlockSize, int numChannels)
     oversampling = std::make_unique<juce::dsp::Oversampling<float>> (
         (size_t) numChannels, 2,                       // 2 stages -> 4x
         juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR,
-        false);                                        // not max quality: min phase
+        true);                                         // max quality: linear phase
     oversampling->initProcessing ((size_t) maxBlockSize);
 
     dcBlockers.clear();
@@ -57,6 +57,7 @@ void GritShaper::process (juce::AudioBuffer<float>& band, const float* env, int 
                                         (size_t) band.getNumChannels(),
                                         (size_t) numSamples);
     auto osBlock = oversampling->processSamplesUp (block);
+    jassert (osBlock.getNumSamples() == 4 * (size_t) numSamples);   // 2-stage = exactly 4x
 
     for (size_t ch = 0; ch < osBlock.getNumChannels(); ++ch)
     {
