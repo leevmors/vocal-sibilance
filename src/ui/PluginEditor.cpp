@@ -47,16 +47,20 @@ VocalSibilanceEditor::VocalSibilanceEditor (VocalSibilanceProcessor& p)
     outputAtt    = std::make_unique<SliderAttachment> (p.apvts, "output",    outputKnob);
 
     setResizable (true, true);
-    setResizeLimits (312, 216, 1040, 720);                 // 60 % .. 200 %
+    setResizeLimits (364, 252, 1456, 1008);                // 70 % .. 280 %
     if (auto* c = getConstrainer())
         c->setFixedAspectRatio ((double) baseWidth / baseHeight);
 
-    const double scale = processor.apvts.state.getProperty ("uiScale", 1.0);
+    const double scale = juce::jlimit (0.7, 2.8,
+        (double) processor.apvts.state.getProperty ("uiScale", 1.4));   // default 728x504
     setSize (juce::roundToInt (baseWidth * scale), juce::roundToInt (baseHeight * scale));
 }
 
 VocalSibilanceEditor::~VocalSibilanceEditor()
 {
+    // persist the final size once, here — resized() must not write it because
+    // hosts fire transient programmatic resizes that would poison the value
+    processor.apvts.state.setProperty ("uiScale", (double) getWidth() / baseWidth, nullptr);
     setLookAndFeel (nullptr);
 }
 
@@ -67,8 +71,6 @@ void VocalSibilanceEditor::paint (juce::Graphics& g)
 
 void VocalSibilanceEditor::resized()
 {
-    processor.apvts.state.setProperty ("uiScale", (double) getWidth() / baseWidth, nullptr);
-
     const float s = (float) getWidth() / baseWidth;
     auto r = getLocalBounds().reduced (juce::roundToInt (14 * s));
 

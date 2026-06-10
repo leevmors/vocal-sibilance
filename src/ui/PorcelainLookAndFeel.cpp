@@ -26,6 +26,9 @@ PorcelainLookAndFeel::PorcelainLookAndFeel()
     setColour (juce::TextButton::textColourOnId, porcelain::accent);
     setColour (juce::BubbleComponent::backgroundColourId, porcelain::face);
     setColour (juce::BubbleComponent::outlineColourId, porcelain::line);
+    setColour (juce::TooltipWindow::textColourId, porcelain::text);
+    setColour (juce::TooltipWindow::backgroundColourId, porcelain::face);
+    setColour (juce::TooltipWindow::outlineColourId, porcelain::line);
 }
 
 juce::Font PorcelainLookAndFeel::labelFont (float height) const

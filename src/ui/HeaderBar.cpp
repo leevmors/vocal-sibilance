@@ -75,12 +75,12 @@ void HeaderBar::resized()
 {
     auto r = getLocalBounds();
     bypassDot.setBounds (r.removeFromRight (r.getHeight()).reduced (4));
-    r.removeFromRight (juce::roundToInt (getHeight() * 2.6f));   // brand text space
+    r.removeFromRight (juce::roundToInt (getHeight() * 2.4f));   // brand text space
     listenButton.setBounds (
         r.removeFromRight (juce::roundToInt (getHeight() * 2.2f)).reduced (0, 6));
     r.removeFromRight (8);
     presetBox.setBounds (
-        r.removeFromRight (juce::roundToInt (getHeight() * 4.6f)).reduced (0, 6));
+        r.removeFromRight (juce::roundToInt (getHeight() * 3.6f)).reduced (0, 6));
 }
 
 void HeaderBar::paint (juce::Graphics& g)
@@ -88,15 +88,15 @@ void HeaderBar::paint (juce::Graphics& g)
     const float h = (float) getHeight();
 
     g.setColour (porcelain::text);
-    g.setFont (lnf.titleFont (h * 0.42f).withExtraKerningFactor (0.22f));
+    g.setFont (lnf.titleFont (h * 0.36f).withExtraKerningFactor (0.18f));
     const auto wordmarkArea = getLocalBounds().withRight (presetBox.getX() - 6);
     g.drawText ("VOCAL SIBILANCE", wordmarkArea, juce::Justification::centredLeft);
 
     g.setColour (porcelain::muted);
-    g.setFont (lnf.labelFont (h * 0.26f).withExtraKerningFactor (0.25f));
+    g.setFont (lnf.labelFont (h * 0.24f).withExtraKerningFactor (0.20f));
     const auto brand = getLocalBounds()
-                           .removeFromRight (getHeight() + juce::roundToInt (h * 2.6f))
+                           .removeFromRight (getHeight() + juce::roundToInt (h * 2.4f))
                            .withTrimmedRight (getHeight() + 4);
-    g.drawText ("DARARARA", brand, juce::Justification::centredRight);
+    g.drawText ("BYDARARARA", brand, juce::Justification::centredRight);
 }
 } // namespace vs
