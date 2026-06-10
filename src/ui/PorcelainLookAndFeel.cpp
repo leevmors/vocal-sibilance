@@ -46,7 +46,9 @@ void PorcelainLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y,
                                              float startAngle, float endAngle,
                                              juce::Slider& slider)
 {
-    const auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (8.0f);
+    const auto rawBounds = juce::Rectangle<int> (x, y, width, height).toFloat();
+    const float margin = juce::jmax (8.0f, juce::jmin (rawBounds.getWidth(), rawBounds.getHeight()) * 0.14f);
+    const auto bounds = rawBounds.reduced (margin);
     const float size = juce::jmin (bounds.getWidth(), bounds.getHeight());
     const auto centre = bounds.getCentre();
     const float radius = size * 0.5f;
@@ -59,9 +61,9 @@ void PorcelainLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y,
     {
         juce::Path body;
         body.addEllipse (centre.x - radius, centre.y - radius, size, size);
-        juce::DropShadow (juce::Colour (0x28000000),
-                          juce::jmax (3, juce::roundToInt (radius * 0.30f)),
-                          { 0, juce::jmax (2, juce::roundToInt (radius * 0.10f)) })
+        juce::DropShadow (juce::Colour (0x26000000),
+                          juce::jmax (3, juce::roundToInt (radius * 0.16f)),
+                          { 0, juce::jmax (2, juce::roundToInt (radius * 0.06f)) })
             .drawForPath (g, body);
     }
 
