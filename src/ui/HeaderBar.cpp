@@ -22,6 +22,7 @@ HeaderBar::HeaderBar (VocalSibilanceProcessor& proc, PorcelainLookAndFeel& lookA
 
     addAndMakeVisible (bypassDot);
     bypassDot.setTitle ("Bypass");
+    addAndMakeVisible (brand);
     bypassAttachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment> (
         processor.apvts, "bypass", bypassDot);
 }
@@ -75,7 +76,7 @@ void HeaderBar::resized()
 {
     auto r = getLocalBounds();
     bypassDot.setBounds (r.removeFromRight (r.getHeight()).reduced (4));
-    r.removeFromRight (juce::roundToInt (getHeight() * 2.4f));   // brand text space
+    brand.setBounds (r.removeFromRight (juce::roundToInt (getHeight() * 2.4f)).reduced (0, juce::roundToInt (getHeight() * 0.32f)));
     listenButton.setBounds (
         r.removeFromRight (juce::roundToInt (getHeight() * 2.2f)).reduced (0, 6));
     r.removeFromRight (8);
@@ -92,11 +93,5 @@ void HeaderBar::paint (juce::Graphics& g)
     const auto wordmarkArea = getLocalBounds().withRight (presetBox.getX() - 6);
     g.drawText ("VOCAL SIBILANCE", wordmarkArea, juce::Justification::centredLeft);
 
-    g.setColour (porcelain::muted);
-    g.setFont (lnf.labelFont (h * 0.24f).withExtraKerningFactor (0.20f));
-    const auto brand = getLocalBounds()
-                           .removeFromRight (getHeight() + juce::roundToInt (h * 2.4f))
-                           .withTrimmedRight (getHeight() + 4);
-    g.drawText ("BYDARARARA", brand, juce::Justification::centredRight);
 }
 } // namespace vs

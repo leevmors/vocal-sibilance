@@ -5,6 +5,7 @@
 #include "PorcelainKnob.h"
 #include "SibilanceDisplay.h"
 #include "HeaderBar.h"
+#include "RainBackground.h"
 
 class VocalSibilanceEditor : public juce::AudioProcessorEditor
 {
@@ -21,6 +22,7 @@ private:
     VocalSibilanceProcessor& processor;
     vs::PorcelainLookAndFeel lnf;
 
+    vs::RainBackground rain;
     vs::HeaderBar header;
     vs::SibilanceDisplay display;
 

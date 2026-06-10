@@ -5,6 +5,7 @@ VocalSibilanceEditor::VocalSibilanceEditor (VocalSibilanceProcessor& p)
 {
     setLookAndFeel (&lnf);
 
+    addAndMakeVisible (rain);
     addAndMakeVisible (header);
     addAndMakeVisible (display);
 
@@ -71,6 +72,7 @@ void VocalSibilanceEditor::paint (juce::Graphics& g)
 
 void VocalSibilanceEditor::resized()
 {
+    rain.setBounds (getLocalBounds());
     const float s = (float) getWidth() / baseWidth;
     auto r = getLocalBounds().reduced (juce::roundToInt (14 * s));
 

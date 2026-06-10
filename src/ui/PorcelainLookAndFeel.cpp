@@ -55,10 +55,33 @@ void PorcelainLookAndFeel::drawRotarySlider (juce::Graphics& g, int x, int y,
     const bool emphasized = (bool) slider.getProperties().getWithDefault ("emphasized", false);
     const bool engaged = slider.isMouseOverOrDragging();
 
-    g.setColour (juce::Colour (0xFFFDFCFA));                      // body
-    g.fillEllipse (centre.x - radius, centre.y - radius, size, size);
+    // soft drop shadow grounds the knob
+    {
+        juce::Path body;
+        body.addEllipse (centre.x - radius, centre.y - radius, size, size);
+        juce::DropShadow (juce::Colour (0x28000000),
+                          juce::jmax (3, juce::roundToInt (radius * 0.30f)),
+                          { 0, juce::jmax (2, juce::roundToInt (radius * 0.10f)) })
+            .drawForPath (g, body);
+    }
 
-    g.setColour (emphasized ? porcelain::text : porcelain::line); // ring
+    // ceramic body: top-lit gradient
+    {
+        juce::ColourGradient body (juce::Colour (0xFFFFFEFB),
+                                   centre.x - radius * 0.35f, centre.y - radius * 0.55f,
+                                   juce::Colour (0xFFEAE7E0),
+                                   centre.x + radius * 0.45f, centre.y + radius * 0.95f,
+                                   true);
+        g.setGradientFill (body);
+        g.fillEllipse (centre.x - radius, centre.y - radius, size, size);
+    }
+
+    // rim light hints at curvature
+    g.setColour (juce::Colours::white.withAlpha (0.65f));
+    g.drawEllipse (centre.x - radius + 1.2f, centre.y - radius + 1.2f,
+                   size - 2.4f, size - 2.4f, 1.0f);
+
+    g.setColour (emphasized ? porcelain::text : porcelain::line);   // outer ring
     g.drawEllipse (centre.x - radius, centre.y - radius, size, size,
                    emphasized ? 2.0f : 1.5f);
 

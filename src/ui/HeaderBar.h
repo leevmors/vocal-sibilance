@@ -38,6 +38,34 @@ private:
         }
     };
 
+    // Brand wordmark that links to the dararara channel.
+    class BrandLink : public juce::Component
+    {
+    public:
+        explicit BrandLink (PorcelainLookAndFeel& l) : lnf (l)
+        {
+            setMouseCursor (juce::MouseCursor::PointingHandCursor);
+            setTitle ("bydararara on YouTube");
+        }
+        void paint (juce::Graphics& g) override
+        {
+            g.setColour (hover ? porcelain::accent : porcelain::muted);
+            g.setFont (lnf.labelFont ((float) getHeight() * 0.72f)
+                           .withExtraKerningFactor (0.20f));
+            g.drawText ("BYDARARARA", getLocalBounds(), juce::Justification::centredRight);
+        }
+        void mouseEnter (const juce::MouseEvent&) override { hover = true;  repaint(); }
+        void mouseExit  (const juce::MouseEvent&) override { hover = false; repaint(); }
+        void mouseUp (const juce::MouseEvent& e) override
+        {
+            if (e.mouseWasClicked())
+                juce::URL ("https://www.youtube.com/@darararabeats").launchInDefaultBrowser();
+        }
+    private:
+        PorcelainLookAndFeel& lnf;
+        bool hover = false;
+    };
+
     void presetChosen();
 
     VocalSibilanceProcessor& processor;
@@ -47,6 +75,7 @@ private:
     juce::ComboBox presetBox;
     juce::TextButton listenButton { "LISTEN" };
     PowerDot bypassDot;
+    BrandLink brand { lnf };
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> listenAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> bypassAttachment;
