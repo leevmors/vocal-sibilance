@@ -89,7 +89,8 @@ void HeaderBar::paint (juce::Graphics& g)
 
     g.setColour (porcelain::text);
     g.setFont (lnf.titleFont (h * 0.42f).withExtraKerningFactor (0.22f));
-    g.drawText ("VOCAL SIBILANCE", getLocalBounds(), juce::Justification::centredLeft);
+    const auto wordmarkArea = getLocalBounds().withRight (presetBox.getX() - 6);
+    g.drawText ("VOCAL SIBILANCE", wordmarkArea, juce::Justification::centredLeft);
 
     g.setColour (porcelain::muted);
     g.setFont (lnf.labelFont (h * 0.26f).withExtraKerningFactor (0.25f));
