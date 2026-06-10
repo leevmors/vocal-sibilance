@@ -36,6 +36,8 @@ public:
     void process (juce::AudioBuffer<float>& buffer);
 
     EngineMetrics getMetrics() const { return metrics; }
+    // 0 is deliberate: the grit oversampler is minimum-phase with only
+    // sub-sample group delay, so there is no integer latency to report.
     int getLatencySamples() const    { return 0; }
 
 private:
