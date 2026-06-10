@@ -54,7 +54,8 @@ target_sources(VocalSibilance PRIVATE
     src/state/PresetManager.cpp
     src/ui/PorcelainLookAndFeel.cpp
     src/ui/SibilanceDisplay.cpp
-    src/ui/HeaderBar.cpp)
+    src/ui/HeaderBar.cpp
+    src/ui/PluginEditor.cpp)
 
 target_include_directories(VocalSibilance PRIVATE src)
 
@@ -108,7 +109,6 @@ target_compile_definitions(dsp_tests PRIVATE
     JUCE_USE_CURL=0
     JUCE_DISPLAY_SPLASH_SCREEN=0)
 
-target_compile_definitions(VocalSibilance PRIVATE VS_USE_GENERIC_EDITOR=1)  # removed in Task 13
 target_compile_definitions(dsp_tests PRIVATE VS_USE_GENERIC_EDITOR=1)       # permanent
 
 target_link_libraries(dsp_tests PRIVATE
