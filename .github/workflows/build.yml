@@ -1,0 +1,66 @@
+name: Build
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows
+          - os: macos-latest
+            name: macOS
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        run: cmake -B build
+
+      - name: Configure (macOS universal)
+        if: runner.os == 'macOS'
+        run: >
+          cmake -B build -DCMAKE_BUILD_TYPE=Release
+          "-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64"
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      - name: Get pluginval (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          curl -L -o pluginval.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_Windows.zip
+          7z x pluginval.zip
+
+      - name: Get pluginval (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          curl -L -o pluginval.zip https://github.com/Tracktion/pluginval/releases/latest/download/pluginval_macOS.zip
+          unzip pluginval.zip
+
+      - name: pluginval (Windows)
+        if: runner.os == 'Windows'
+        run: ./pluginval.exe --strictness-level 10 --skip-gui-tests --validate "build/VocalSibilance_artefacts/Release/VST3/Vocal Sibilance.vst3"
+
+      - name: pluginval (macOS)
+        if: runner.os == 'macOS'
+        run: ./pluginval.app/Contents/MacOS/pluginval --strictness-level 10 --skip-gui-tests --validate "build/VocalSibilance_artefacts/Release/VST3/Vocal Sibilance.vst3"
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: vocal-sibilance-${{ matrix.name }}
+          path: |
+            build/VocalSibilance_artefacts/Release/VST3
+            build/VocalSibilance_artefacts/Release/CLAP
+            build/VocalSibilance_artefacts/Release/AU
+            build/VocalSibilance_artefacts/Release/Standalone

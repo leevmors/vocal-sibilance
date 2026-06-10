@@ -4,7 +4,7 @@
 
 **Goal:** Build Vocal Sibilance v1.0 — a free, open-source (AGPLv3) de-esser plugin (VST3/AU/CLAP, Windows+macOS) with detector-gated grit saturation and a Porcelain Display-First UI.
 
-**Architecture:** JUCE 8 (C++20, CMake) plugin. A pure-DSP engine (`src/dsp/`, no GUI deps, Catch2-tested) does Linkwitz-Riley band isolation → relative sibilance detection → soft-knee gain reduction → 4× oversampled morphing waveshaper. `PluginProcessor` exposes 9 APVTS parameters and feeds the UI via a lock-free FIFO + atomics. The UI is fully vector-drawn (custom LookAndFeel).
+**Architecture:** JUCE 8 (C++20, CMake) plugin. A pure-DSP engine (`src/dsp/`, no GUI deps, Catch2-tested) does Linkwitz-Riley band isolation → relative sibilance detection → soft-knee gain reduction → 8× oversampled morphing waveshaper. `PluginProcessor` exposes 9 APVTS parameters and feeds the UI via a lock-free FIFO + atomics. The UI is fully vector-drawn (custom LookAndFeel).
 
 **Tech Stack:** JUCE 8.0.4 (FetchContent), clap-juce-extensions, Catch2 v3.5.2, CMake ≥3.22, MSVC 2022 (Win) / Xcode clang (mac CI), GitHub Actions, pluginval, Inno Setup, Inter font (OFL).
 
@@ -22,7 +22,7 @@
 | `src/dsp/CrossoverBands.{h,cpp}` | LR4 3-band split + flat recombine |
 | `src/dsp/SibilanceDetector.{h,cpp}` | Threshold-free 0..1 "openness" detector |
 | `src/dsp/GainComputer.{h,cpp}` | Openness+Smooth → smoothed linear band gain |
-| `src/dsp/GritShaper.{h,cpp}` | 4× oversampled morphing waveshaper, detector-gated |
+| `src/dsp/GritShaper.{h,cpp}` | 8× oversampled morphing waveshaper, detector-gated |
 | `src/dsp/SibilanceEngine.{h,cpp}` | Wires the chain; mix/output/listen/bypass; metrics |
 | `src/state/SpectrumFifo.h` | Lock-free audio→UI sample FIFO (header-only) |
 | `src/state/PresetManager.{h,cpp}` | Factory (BinaryData XML) + user preset I/O |
@@ -848,7 +848,7 @@ git commit -m "feat: soft-knee GainComputer with fast-attack/gentle-release smoo
 
 ---
 
-### Task 6: GritShaper (morphing waveshaper, 4× oversampled)
+### Task 6: GritShaper (morphing waveshaper, 8× oversampled)
 
 **Files:**
 - Create: `src/dsp/GritShaper.h`, `src/dsp/GritShaper.cpp`
@@ -978,7 +978,7 @@ TEST_CASE ("aliasing sits >= 40 dB below the loudest harmonic", "[grit]")
 
 namespace vs
 {
-// Detector-gated morphing waveshaper for the sibilant band, 4x oversampled
+// Detector-gated morphing waveshaper for the sibilant band, 8x oversampled
 // with minimum-phase polyphase IIR halfbands (no integer latency).
 class GritShaper
 {
@@ -1016,7 +1016,7 @@ namespace vs
 void GritShaper::prepare (double sampleRate, int maxBlockSize, int numChannels)
 {
     oversampling = std::make_unique<juce::dsp::Oversampling<float>> (
-        (size_t) numChannels, 2,                       // 2 stages -> 4x
+        (size_t) numChannels, 3,                       // 3 stages -> 8x
         juce::dsp::Oversampling<float>::filterHalfBandPolyphaseIIR,
         false);                                        // not max quality: min phase
     oversampling->initProcessing ((size_t) maxBlockSize);
@@ -1076,7 +1076,7 @@ void GritShaper::process (juce::AudioBuffer<float>& band, const float* env, int 
         float* d = osBlock.getChannelPointer (ch);
         for (size_t i = 0; i < osBlock.getNumSamples(); ++i)
         {
-            const float wet = grit * env[i >> 2];          // 4x: base-rate index i/4
+            const float wet = grit * env[i >> 3];          // 8x: base-rate index i/8
             if (wet <= 0.0f)
                 continue;
             const float drive = 1.0f + 9.0f * wet;

@@ -1,0 +1,9 @@
+<Preset name="Maximum Character">
+  <PARAM id="smooth" value="50"/>
+  <PARAM id="grit" value="70"/>
+  <PARAM id="character" value="85"/>
+  <PARAM id="mix" value="90"/>
+  <PARAM id="output" value="0"/>
+  <PARAM id="rangeLo" value="3000"/>
+  <PARAM id="rangeHi" value="13000"/>
+</Preset>

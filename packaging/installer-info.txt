@@ -1,0 +1,31 @@
+VOCAL SIBILANCE by dararara
+---------------------------
+
+A free de-esser for vocals.
+
+WHAT IT DOES
+
+Harsh "s", "sh" and "t" sounds (sibilance) can make a vocal painful to
+listen to. Vocal Sibilance detects those moments automatically and smooths
+them - and, when you want attitude instead of polish, its Grit engine
+saturates only the sibilant sounds, turning harshness into texture.
+
+THE CONTROLS
+
+  Display    - live spectrum; ember bars show detected sibilance;
+               drag the two handles to set the detection range
+  SMOOTH     - how much sibilance reduction (up to 15 dB)
+  GRIT       - saturation applied only while sibilance is detected
+  CHARACTER  - grit flavor: warm tape (left) to edgy fuzz (right)
+  MIX        - parallel dry/wet
+  OUTPUT     - output trim
+  LISTEN     - solo exactly what the plugin is acting on
+
+THIS INSTALLER
+
+Installs the VST3 plugin (and optionally the CLAP plugin) into your
+system's standard plugin folders. Nothing else is written to your
+computer. Uninstall any time from Windows Settings.
+
+Copyright (C) 2026 bydararara
+https://www.youtube.com/@darararabeats

@@ -1,3 +1,6 @@
-﻿.superpowers/
+.superpowers/
 build/
-
+*.zip
+inter_tmp/
+packaging/Output/
+*.pkg

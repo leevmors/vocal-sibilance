@@ -1,0 +1,9 @@
+<Preset name="Gritty Pop">
+  <PARAM id="smooth" value="45"/>
+  <PARAM id="grit" value="35"/>
+  <PARAM id="character" value="55"/>
+  <PARAM id="mix" value="100"/>
+  <PARAM id="output" value="0"/>
+  <PARAM id="rangeLo" value="4000"/>
+  <PARAM id="rangeHi" value="11000"/>
+</Preset>
